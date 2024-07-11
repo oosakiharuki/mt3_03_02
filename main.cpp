@@ -1,6 +1,19 @@
 #include <Novice.h>
+#include "MyMath.h"
+#include"imgui.h"
+
 
 const char kWindowTitle[] = "LE2C_07_オオサキ_ハルキ_タイトル";
+MyMath* myMath = new MyMath();
+
+Vector3 operator+(const Vector3& v1, const Vector3& v2) { return myMath->Add(v1, v2); }
+Vector3 operator-(const Vector3& v1, const Vector3& v2) { return myMath->Subtract(v1, v2); }
+Vector3 operator*(float s, const Vector3& v) { return myMath->Multiply(s, v); }
+Vector3 operator*(const Vector3& v, float s) { return s * v; }
+
+Matrix4x4 operator*(const Matrix4x4& m1, const Matrix4x4& m2) { return myMath->MultiplyMatrix(m1, m2); }
+
+
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
@@ -11,6 +24,22 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// キー入力結果を受け取る箱
 	char keys[256] = {0};
 	char preKeys[256] = {0};
+
+
+	Vector3 a{ 0.2f,1.0f,0.0f };
+	Vector3 b{ 2.4f,3.1f,1.2f };
+
+	Vector3 c = a + b;
+	Vector3 d = a - b;
+	Vector3 e = a * 2.4f;
+
+	Vector3 rotate{ 0.4f,1.43f,-0.8f };
+	Matrix4x4 rotateXMatrix = myMath->MakeRotateXMatrix(rotate.x);
+	Matrix4x4 rotateYMatrix = myMath->MakeRotateYMatrix(rotate.y);
+	Matrix4x4 rotateZMatrix = myMath->MakeRotateZMatrix(rotate.z);
+
+	Matrix4x4 rotateMatrix = rotateXMatrix * rotateYMatrix * rotateZMatrix;
+
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -32,6 +61,22 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		///
 		/// ↓描画処理ここから
 		///
+
+		ImGui::Begin("window");
+		ImGui::Text("c:%f,%f,%f", c.x, c.y, c.z);
+		ImGui::Text("d:%f,%f,%f", d.x, d.y, d.z); 
+		ImGui::Text("e:%f,%f,%f", e.x, e.y, e.z);
+
+		ImGui::Text("matrix:\n%f, %f, %f, %f\n %f, %f, %f, %f\n%f, %f, %f, %f\n %f, %f, %f, %f\n",
+		rotateMatrix.m[0][0], rotateMatrix.m[0][1], rotateMatrix.m[0][2], rotateMatrix.m[0][3],
+		rotateMatrix.m[1][0], rotateMatrix.m[1][1], rotateMatrix.m[1][2], rotateMatrix.m[1][3],
+		rotateMatrix.m[2][0], rotateMatrix.m[2][1], rotateMatrix.m[2][2], rotateMatrix.m[2][3],
+		rotateMatrix.m[3][0], rotateMatrix.m[3][1], rotateMatrix.m[3][2], rotateMatrix.m[3][3]);
+
+		ImGui::End();
+
+
+
 
 		///
 		/// ↑描画処理ここまで
